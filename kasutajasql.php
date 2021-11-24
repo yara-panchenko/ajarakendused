@@ -1,0 +1,53 @@
+<?php
+require_once ("conf.php");
+//uue nimi lisamine - INSERT INTO
+if(!empty($_REQUEST["uusnimi"])) {
+    if (($_REQUEST["uusnimi"])) {
+        $kask = $yhendus->prepare("INSERT INTO aja(projectNimi, nimi, roll, sisselogimisaeg, kinnitusstaatus) VALUES (?, 'Kasutaja', 'Kasutaja', now(), 'Pole kinnitatud')");
+        $kask->bind_param("s", $_REQUEST["uusnimi"]);
+        $kask->execute();
+        header("Location: $_SERVER[PHP_SELF]");
+        $yhendus->close();
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Aja jalgmise</title>
+</head>
+<body>
+<div class="position-relative">
+        <form action="logout.php" method="post">
+        <input class="position-absolute top-0 end-0" type="submit" value="Logi välja" name="logout">
+</form>
+</div>
+<table class="table table-bordered table-dark">
+    <tr>
+        <th>Project Nimi</th>
+        <th>Nimi</th>
+        <th>Roll</th>
+        <th>Aeg</th>
+        <th>Kinnitusstaatus</th>
+    </tr>
+    <h1>Projecti lisa leht!</h1>
+    <form action="?">
+        <input type="text" placeholder="Lisa project nimi" name="uusnimi" autocomplete="off">
+        <input type="submit" value="Ok">
+    </form>
+<?php
+//andmetabelus sisestatud nimed
+$kask=$yhendus->prepare("SELECT id, projectNimi, nimi, roll, sisselogimisaeg, kinnitusstaatus FROM aja");
+$kask->bind_result($id, $projectNimi, $nimi, $roll, $sisselogimisaeg, $kinnitusstaatus);
+$kask->execute();
+while ($kask->fetch()){
+echo "<tr><td>$projectNimi</td>";
+echo "<td>$nimi</td>";
+echo "<td>$roll</td>";
+echo "<td>$sisselogimisaeg</td>";
+echo "<td>$kinnitusstaatus</td>";
+echo "</tr>";
+}
